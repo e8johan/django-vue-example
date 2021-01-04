@@ -1,11 +1,16 @@
 <template>
-    <p>item!</p>
+    <p>
+        <span v-if="item.done" v-on:click="$emit('clear', item.id);">[x]</span>
+        <span v-else="" v-on:click="$emit('check', item.id);">[&nbsp;]</span>
+        {{ item.text }}
+    </p>
 </template>
 
 <script>
 export default {
     name: "todo-item",
     components: {},
+    props: [ 'item' ],
     data: function() { 
         return {
         };

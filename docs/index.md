@@ -295,3 +295,112 @@ NODE_ENV=development ./manage.py runserver
 ```
 
 Make sure that you source the `source-to-set-path.sh` before running the server, otherwise it will complain about the `parcel` command not being found.
+
+## Rendering the List Using Vue
+
+The next step is to render the view using Vue. The idea is that we pass the data using the Django context, as usual when working with Django, but instead of rendering it in the template, we pick up the data from Vue and render it using Vue components.
+
+Why do we do this? This is the first step on our path towards a reactive app using the REST-like API.
+
+### Building the Context
+
+In Django, we build the context using the following code.
+
+```
+def item_to_dict(item):
+    return {
+            'id': item.pk,
+            'text': item.text,
+            'done': item.is_done,
+        }
+
+def index(request):
+    items = Todo.objects.all()
+    itemlist = []
+    for item in items:
+        itemlist.append(item_to_dict(item))
+    context = {
+        'items': itemlist,
+    }
+    return render(request, 'todo/index.html', context = context)
+```
+
+The code above makes the context available to the Django template renderer. Using it we render a Javascript snippet exposing the context. This script is placed before the compressor is run.
+
+```
+<script>
+const context_items = [
+{% for item in items %}
+    { 'id': {{ item.id }}, 'text': '{{ item.text }}', 'done': {% if item.done %}true{% else %}false{% endif %}    },
+{% endfor %}
+];
+</script>
+```
+
+Notice that booleans need to be explicitly transformed to `true`/`false`. This is necessary as the Python booleans are called `True`/`False`.
+
+### The Vue App
+
+#### The Structure
+
+Given two Todo items (created using the Django admin interface), the following Vue components are generated:
+
+![](images/vue-structure.png&raw=true)
+
+#### Getting the Context to Vue
+
+The `VueApp`'s `mounted` function copies the context into the Vue state:
+
+```
+mounted() {
+    this.items = context_items;
+}
+```
+
+#### Listeners
+
+When an `TodoItem` is clicked, it emits either `check` or `clear`. We want to catch these signals in the `TodoApp`, rather than in `TodoList`. To propagate it through, we use the `v-on="$listeners"` pattern in the `TodoList`.
+
+##### TodoItem
+
+```
+<p>
+    <span v-if="item.done" v-on:click="$emit('clear', item.id);">[x]</span>
+    <span v-else="" v-on:click="$emit('check', item.id);">[&nbsp;]</span>
+    {{ item.text }}
+</p>
+```
+
+##### TodoList
+
+```
+<todo-item v-for="item in items" v-bind:item="item" v-on="$listeners"></todo-item>
+```
+
+##### TodoApp
+
+First, the signals are caught in the template section:
+
+```
+<todo-list 
+    v-bind:items="items"
+    
+    v-on:clear="on_clear"
+    v-on:check="on_check"
+></todo-list>
+```
+
+Then we catch the signals and arguments in the corresponding methods. Notice that event handler methods start with `on_` by convention.
+
+```
+methods: {
+    /* Event handlers */
+    
+    'on_clear': function(id) {
+        ...
+    },
+    'on_check': function(id) {
+        ...
+    },
+}
+```
