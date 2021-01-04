@@ -13,6 +13,7 @@ Make sure that you are familiar with the following documents and tools:
 * The Django First Steps Tutorial, found [here](https://docs.djangoproject.com/en/3.1/).
 * The `django-compressor-parceljs` README, found [here](https://github.com/eadwinCode/django-compressor-parceljs).
 * Some ParcelJS basics, found [here](https://parceljs.org/).
+* Some Axios basics, found [here](https://github.com/axios/axios).
 
 # The Guide
 
@@ -404,3 +405,19 @@ methods: {
     },
 }
 ```
+
+## Dynamic Behaviour using axios
+
+The last step is to implement dynamic behaviour using [Axios](https://github.com/axios/axios). We will use the Axios module. This involves handling Django's cross-site forgery protection, as well as using the REST-like API.
+
+T.B.D.
+
+## Testing the API
+
+T.B.D.
+
+# Tips and Tricks
+
+## Mixing Compressed and Ordinary Static Contents
+
+T.B.D.
