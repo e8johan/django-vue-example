@@ -1,4 +1,4 @@
-# Introductiin
+# Introduction
 
 This guide will talk you through setting up a Django and Vue application. The intention is to establish best practices in some respect, but also for me to learn how to do this. Explaining something is the best way to learn.
 
