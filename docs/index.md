@@ -410,11 +410,141 @@ methods: {
 
 The last step is to implement dynamic behaviour using [Axios](https://github.com/axios/axios). We will use the Axios module. This involves handling Django's cross-site forgery protection, as well as using the REST-like API.
 
-T.B.D.
+### The Django Views
 
-## Testing the API
+The REST-like API is exposed through the two methods `api_todo_list` and `api_todo_details`. There are good frameworks for this type of work, but these functions are hand-crafted. Instead of diving into the details, I quote the docstrings for the two methods below.
 
-T.B.D.
+Two other aspects to be aware of:
+
+- In order for the Django's [cross-site request forgery protection system](https://docs.djangoproject.com/en/3.1/ref/csrf/) to play nice, we need to decorate the `index` method with the `@ensure_csrf_cookie` to force Django to pass the CSRF cookie along with the response.
+
+#### Docs for api_todo_list
+
+End-point for /api/todo/
+        
+##### GET
+        
+Returns a list of todo item dicts with the following keys:
+
+- `id` - integer, unique id of task
+- `text` - text string, human readable description of task
+- `done` - boolean, indicating if the task is done
+
+##### POST
+
+Expects a json body containing the following keys:
+
+- `text`, text string, human readable description of task
+
+Returns a single item dict as described in the GET section
+
+#### Docs for api_todo_details
+
+API end point for /api/todo/<todo_id>/
+
+##### PATCH
+
+Updates the todo item information. Expects a body with a json struct with the following parameter:
+
+- `done`, boolean, indicating if the task is done
+
+Returns a single item dict as described in the /api/todo/ GET section.
+
+##### DELETE
+
+Deletes the item.
+
+Returns an empty dict.
+
+### Setup Axios
+
+We start by installing Axios using npm:
+
+```
+npm install axios
+```
+
+We then continue to import Axios into `TodoApp.vue`. We also tell Axios to use the xsrf header and cookie. This is a part of Django's [cross-site request forgery protection system](https://docs.djangoproject.com/en/3.1/ref/csrf/). This is done outside of the `export default` section.
+
+```
+import axios from 'axios';
+
+axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
+axios.defaults.xsrfCookieName = "csrftoken"
+
+export default {
+    ...
+```
+
+### Adding Items
+
+We add a text entry and a button to the `TodoApp.vue` to allow the user to add items to the todo list.
+
+```
+<input v-model="textentry" placeholder="Enter todo">
+<button v-on:click="on_add_click">Add</button>
+```
+
+The button is coupled with an event handler. In this handler, we use axios to make a `POST` request to `/api/todo` with the `text` of the item in the request body. 
+
+If the request is successful, we get a response containing the new item. We push this to the items list.
+
+If the request fails we log the error to the console. In a real world application you probably want to do something a bit more fancy here.
+
+```
+'on_add_click': function() {
+    axios.post('/api/todo', { text: this.textentry })
+        .then((response) => {
+            this.items.push(response.data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+
+    this.textentry = '';
+}
+```
+
+### Updating Item Status
+
+We already have methods for handling the checking and clearing of the `done` flag of a todo item. We complement these with an Axios call making a `PATCH` request to `/api/todo/<id>/`. Notice that we update the status before making the request, assuming a successful request, and then re-update the item once we get a response back.
+
+```
+'on_clear': function(id) {
+    const index = this.index_from_id(id);
+    if (index != -1) {
+        this.items[index].done = false;
+        axios.patch('/api/todo/' + id + '/', { done: false })
+            .then((response) => {
+                if (response.data.id == id) {
+                    this.items[index].done = response.data.done;
+                }                        
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+}
+```
+
+### Deleting items
+
+We also add the ability to delete items. This is done via a `DELETE` request to `/api/todo/<id>/`. As can be seen below, we remove the item from `this.items` first after we have received a response indicating that the request was successful.
+
+```
+'on_delete': function(id) {
+    const index = this.index_from_id(id);
+    if (index != -1) {
+        axios.delete('/api/todo/' + id + '/')
+            .then((response) => {
+                this.items.splice(index,1);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+}
+```
 
 # Tips and Tricks
 
