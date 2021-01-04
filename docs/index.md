@@ -8,9 +8,11 @@ The goal is to create a Django application with a Vue based user interface, crea
 
 # Reference Documentation
 
-Make sure that you are familiar with the following documents:
+Make sure that you are familiar with the following documents and tools:
 
 * The Django First Steps Tutorial, found [here](https://docs.djangoproject.com/en/3.1/).
+* The `django-compressor-parceljs` README, found [here](https://github.com/eadwinCode/django-compressor-parceljs).
+* Some ParcelJS basics, found [here](https://parceljs.org/).
 
 # The Guide
 
@@ -124,3 +126,172 @@ urlpatterns = [
 ```
 
 Notice the `app_name`, that provides a namespace to our url names.
+
+## Delivering the Vue App
+
+The next step is to deliver the Vue app. This will involve setting up the actual Vue infrastructure, including nodejs, `django-compressor-parceljs`, and their deps, as well as the ability to serve static files from the Django server in our development environment.
+
+The general game plan is to deliver the app as a web page through the index call. The app will consist of an HTML entry point served as a Django template, and the app itself, served as static files.
+
+### Install ParcelJS
+
+```
+npm init
+npm install --save-dev parcel-bundler
+```
+
+Binaries end up in `node_modules/.bin`, so I create the following sourcable `source-to-set-path.sh` file:
+ 
+```
+PATH="$PATH:$(pwd)/node_modules/.bin/"
+```
+
+I source this file to initialize the environment just after having sources the Python virtual environment.
+
+### Install django-compressor-parceljs
+
+```
+pip install django-compressor-parceljs
+pip freeze > requirements.txt
+```
+
+Configure the app as detailed in the project documentation, i.e. alter the `INSTALLED_APPS` and `STATICFILES_FINDERS` in `settings.py`. Then add the following lines to your `development-local_settings.py` (and current `local_settings.py`).
+
+```
+COMPRESS_ENABLED = True
+COMPRESS_REBUILD_TIMEOUT = 1
+```
+
+The first line enables the compressor, and the second makes sure that the cache is re-created every second, which is good for development (no need to restart the Django server).
+
+Also, make sure that the Django server serves static files during development ([documentation](https://docs.djangoproject.com/en/3.1/howto/static-files/#serving-static-files-during-development)).
+
+
+### Install Vue
+
+```
+npm install --save-dev vue-template-compiler @vue/component-compiler-utils
+npm install vue
+```
+
+### Create the HTML, Javascript and Vue Files
+
+These are the placeholder files to ensure that the setup is working. They represent the actual file structure, but contains no actual bindings or meaningful code.
+
+#### todo/templates/todo/index.html
+
+Note that the `index` function in `todo/views.py` is altered to serve this file using the `render` function.
+
+```
+{% load static %}
+{% load compress %}
+
+<html>
+<head>
+
+    <meta charset="UTF-8">
+
+</head>
+<body>
+
+    <div id="app"></div>
+
+{% compress parcel file todoapp %}
+    <script src="{% static 'js/todoapp.js' %}"></script>
+{% endcompress %}
+
+</body>
+</html>
+```
+
+#### todo/static/js/todoapp.js
+
+```
+import Vue from 'vue';
+import TodoApp from '../components/TodoApp.vue';
+
+new Vue(TodoApp).$mount("#app");
+```
+
+#### todo/static/components/TodoApp.vue
+
+```
+<template>
+    <todo-list></todo-list>
+</template>
+
+<script>
+import TodoList from './TodoList.vue'
+
+export default {
+    name: "todoapp",
+    components: { TodoList },
+    data: function() { 
+        return {
+        };
+    },
+    methods: {
+    },
+    mounted() {
+    },
+}
+</script>
+```
+
+#### todo/static/components/TodoList.vue
+
+```
+<template>
+    <todo-item></todo-item>
+</template>
+
+<script>
+import TodoItem from './TodoItem.vue'
+
+export default {
+    name: "todo-list",
+    components: { TodoItem },
+    data: function() { 
+        return {
+        };
+    },
+    methods: {
+    },
+    mounted() {
+    },
+}
+</script>
+```
+
+#### todo/static/components/TodoItem.vue
+
+```
+<template>
+    <p>item!</p>
+</template>
+
+<script>
+export default {
+    name: "todo-item",
+    components: {},
+    data: function() { 
+        return {
+        };
+    },
+    methods: {
+    },
+    mounted() {
+    },
+}
+</script>
+```
+
+### Running the Server
+
+If everything is in place, you can run the local server using the following command:
+
+```
+NODE_ENV=development ./manage.py runserver
+```
+
+Make sure that you source the `source-to-set-path.sh` before running the server, otherwise it will complain about the `parcel` command not being found.

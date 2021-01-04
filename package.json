@@ -1,0 +1,30 @@
+{
+  "name": "djangovue",
+  "version": "0.1.0",
+  "description": "An example todo app showcasing how to mix Django and Vue",
+  "main": "Access via Django",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/e8johan/django-vue-example.git"
+  },
+  "author": "Johan Thelin",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/e8johan/django-vue-example/issues"
+  },
+  "homepage": "https://github.com/e8johan/django-vue-example#readme",
+  "devDependencies": {
+    "@vue/component-compiler-utils": "^3.2.0",
+    "parcel-bundler": "^1.12.4",
+    "vue-template-compiler": "^2.6.12"
+  },
+  "dependencies": {
+    "vue": "^2.6.12"
+  }
+}
