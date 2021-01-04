@@ -12,6 +12,8 @@
     <div id="app"></div>
     
 <script>
+const context_static_url_trashcan = "{% static 'images/trashcan.png' %}"
+
 const context_items = [
 {% for item in items %}
     { 'id': {{ item.id }}, 'text': '{{ item.text }}', 'done': {% if item.done %}true{% else %}false{% endif %}    },
