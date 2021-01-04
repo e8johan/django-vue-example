@@ -346,7 +346,7 @@ Notice that booleans need to be explicitly transformed to `true`/`false`. This i
 
 Given two Todo items (created using the Django admin interface), the following Vue components are generated:
 
-![](images/vue-structure.png&raw=true)
+![](docs/images/vue-structure.png&raw=true)
 
 #### Getting the Context to Vue
 
