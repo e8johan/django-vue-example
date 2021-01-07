@@ -1,7 +1,7 @@
 asgiref==3.3.1
 Django==3.1.5
 django-appconf==1.0.4
-django-compressor-parceljs==2.3.2
+django-compressor-parceljs==2.3.3
 pytz==2020.5
 rcssmin==1.0.6
 rjsmin==1.1.0

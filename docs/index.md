@@ -548,8 +548,12 @@ on_delete: function(id) {
 }
 ```
 
-# Tips and Tricks
+### Mixing Compressed and Ordinary Static Contents
 
-## Mixing Compressed and Ordinary Static Contents
+When referring to assets from the files getting compressed, these assets will also get compressed. This might not always be desirable. To refer to assets without passing them through the compressor, the `///..` prefix can be used, e.g:
 
-T.B.D.
+```
+<img src="///../static/images/trashcan.png" v-on:click="$emit('delete', item.id);" />
+```
+
+The code above will end up referring to `/static/images/trashcan.png`.
