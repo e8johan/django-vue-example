@@ -414,7 +414,7 @@ The last step is to implement dynamic behaviour using [Axios](https://github.com
 
 The REST-like API is exposed through the two methods `api_todo_list` and `api_todo_details`. There are good frameworks for this type of work, but these functions are hand-crafted. Instead of diving into the details, I quote the docstrings for the two methods below.
 
-Two other aspects to be aware of:
+Some other aspects to be aware of:
 
 - In order for the Django's [cross-site request forgery protection system](https://docs.djangoproject.com/en/3.1/ref/csrf/) to play nice, we need to decorate the `index` method with the `@ensure_csrf_cookie` to force Django to pass the CSRF cookie along with the response.
 
