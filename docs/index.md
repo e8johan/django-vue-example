@@ -397,10 +397,10 @@ Then we catch the signals and arguments in the corresponding methods. Notice tha
 methods: {
     /* Event handlers */
     
-    'on_clear': function(id) {
+    on_clear: function(id) {
         ...
     },
-    'on_check': function(id) {
+    on_check: function(id) {
         ...
     },
 }
@@ -491,8 +491,10 @@ If the request is successful, we get a response containing the new item. We push
 
 If the request fails we log the error to the console. In a real world application you probably want to do something a bit more fancy here.
 
+Notice that we use the `=>` way of creating an anonymous function, rather than the `function() {}`. This is because the `=>` way preserves `this`, allowing us to modify `this.items` inside the anonymous function body.
+
 ```
-'on_add_click': function() {
+on_add_click: function() {
     axios.post('/api/todo', { text: this.textentry })
         .then((response) => {
             this.items.push(response.data);
@@ -510,7 +512,7 @@ If the request fails we log the error to the console. In a real world applicatio
 We already have methods for handling the checking and clearing of the `done` flag of a todo item. We complement these with an Axios call making a `PATCH` request to `/api/todo/<id>/`. Notice that we update the status before making the request, assuming a successful request, and then re-update the item once we get a response back.
 
 ```
-'on_clear': function(id) {
+on_clear: function(id) {
     const index = this.index_from_id(id);
     if (index != -1) {
         this.items[index].done = false;
@@ -532,7 +534,7 @@ We already have methods for handling the checking and clearing of the `done` fla
 We also add the ability to delete items. This is done via a `DELETE` request to `/api/todo/<id>/`. As can be seen below, we remove the item from `this.items` first after we have received a response indicating that the request was successful.
 
 ```
-'on_delete': function(id) {
+on_delete: function(id) {
     const index = this.index_from_id(id);
     if (index != -1) {
         axios.delete('/api/todo/' + id + '/')

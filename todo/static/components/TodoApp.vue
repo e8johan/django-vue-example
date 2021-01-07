@@ -34,7 +34,7 @@ export default {
     methods: {
         /* Event handlers */
         
-        'on_clear': function(id) {
+        on_clear: function(id) {
             const index = this.index_from_id(id);
             if (index != -1) {
                 this.items[index].done = false;
@@ -49,7 +49,7 @@ export default {
                     });
             }
         },
-        'on_check': function(id) {
+        on_check: function(id) {
             const index = this.index_from_id(id);
             if (index != -1) {
                 this.items[index].done = true;
@@ -64,7 +64,7 @@ export default {
                     });
             }
         },
-        'on_delete': function(id) {
+        on_delete: function(id) {
             const index = this.index_from_id(id);
             if (index != -1) {
                 axios.delete('/api/todo/' + id + '/')
@@ -76,7 +76,7 @@ export default {
                     });
             }
         },
-        'on_add_click': function() {
+        on_add_click: function() {
             axios.post('/api/todo', { text: this.textentry })
                 .then((response) => {
                     this.items.push(response.data);
@@ -87,7 +87,7 @@ export default {
 
             this.textentry = '';
         },
-        'on_reload_click': function() {
+        on_reload_click: function() {
             this.items = [];
             axios.get('/api/todo')
                 .then((response) => {
@@ -99,7 +99,7 @@ export default {
         },
         
         /* Functions */
-        'index_from_id': function(id) {
+        index_from_id: function(id) {
             for (var ii=0; ii<this.items.length; ++ii) {
                 if (this.items[ii].id == id) {
                     return ii;
