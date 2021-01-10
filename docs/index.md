@@ -179,13 +179,27 @@ npm install vue
 
 These are the placeholder files to ensure that the setup is working. They represent the actual file structure, but contains no actual bindings or meaningful code.
 
+To avoid exposing our raw source tree to our end users, we create a `private_static` directory structure in parallel to the `static` directory in the `todo` app that Django commonly uses. This directory will contain all the files that we intend to run through the compressor. That means Javacript and Vue files in this example.
+
+The directory is referenced from `settings.py` in the `COMPRESS_PRIVATE_DIRS` variable:
+
+```
+COMPRESS_PRIVATE_DIRS = [
+    os.path.join(BASE_DIR, 'todo/private_static/'),
+]
+```
+
+Notice that for thie private directories, the private static directories have to be enumerated per Django application. That means that if we had an application in parallel to `todo`, we would need to have two lines in the `settings.py`.
+
+In the `index.html`, we use the `private_static` function. It works just as the `static` function, but refers to files listed under the `COMPRESS_PRIVATE_DIRS` directories, instead of under the search paths of the ordinary static files.
+
 #### todo/templates/todo/index.html
 
 Note that the `index` function in `todo/views.py` is altered to serve this file using the `render` function.
 
 ```
-{% load static %}
 {% load compress %}
+{% load private_static %}
 
 <html>
 <head>
@@ -198,14 +212,14 @@ Note that the `index` function in `todo/views.py` is altered to serve this file 
     <div id="app"></div>
 
 {% compress parcel file todoapp %}
-    <script src="{% static 'js/todoapp.js' %}"></script>
+    <script src="{% private_static 'js/todoapp.js' %}"></script>
 {% endcompress %}
 
 </body>
 </html>
 ```
 
-#### todo/static/js/todoapp.js
+#### todo/private_static/js/todoapp.js
 
 ```
 import Vue from 'vue';
@@ -214,7 +228,7 @@ import TodoApp from '../components/TodoApp.vue';
 new Vue(TodoApp).$mount("#app");
 ```
 
-#### todo/static/components/TodoApp.vue
+#### todo/private_static/components/TodoApp.vue
 
 ```
 <template>
@@ -239,7 +253,7 @@ export default {
 </script>
 ```
 
-#### todo/static/components/TodoList.vue
+#### todo/private_static/components/TodoList.vue
 
 ```
 <template>
@@ -264,7 +278,7 @@ export default {
 </script>
 ```
 
-#### todo/static/components/TodoItem.vue
+#### todo/private_static/components/TodoItem.vue
 
 ```
 <template>

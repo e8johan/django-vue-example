@@ -120,6 +120,10 @@ STATICFILES_FINDERS = [
     'compressor.finders.CompressorFinder',
 ]
 
+COMPRESS_PRIVATE_DIRS = [
+    os.path.join(BASE_DIR, 'todo/private_static/'),
+]
+
 try:
     from .local_settings import *
 except ImportError:

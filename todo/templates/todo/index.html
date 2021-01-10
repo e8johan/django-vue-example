@@ -1,5 +1,5 @@
-{% load static %}
 {% load compress %}
+{% load private_static %}
 
 <html>
 <head>
@@ -20,7 +20,7 @@ const context_items = [
 </script>
 
 {% compress parcel file todoapp %}
-    <script src="{% static 'js/todoapp.js' %}"></script>
+    <script src="{% private_static 'js/todoapp.js' %}"></script>
 {% endcompress %}
 
 </body>
