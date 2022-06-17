@@ -54,6 +54,7 @@ echo "__pycache__/" >> .gitignore
 Now we can create an initial commit:
 
 ```
+git init
 git add manage.py requirements.txt djangovue todo
 git commit -m "Initial commit"
 ```
